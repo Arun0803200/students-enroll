@@ -3,7 +3,7 @@ import { Connection } from "mongoose";
 import { Action } from "routing-controllers";
 import { AuthSerice } from "./AuthorizationService";
 import Container from "typedi";
-import { adminUserModels } from "../Models/AdminUserModel";
+import { adminUserModels } from "../api/Models/AdminUserModel";
 
 export function authorizationChecker(connection: Connection): (action: Action, roles: string[]) => Promise<boolean> | boolean {
     const authService = Container.get<AuthSerice>(AuthSerice);

@@ -1,8 +1,8 @@
 import { bootstrapMicroframework } from "microframework";
-import { ioLoader } from "./Loaders/IoLoader";
-import { mongooseLoader } from "./Loaders/MongooseLoader";
-import { expressLoader } from "./Loaders/ExpressLoader";
-import { homeLoader } from "./Loaders/HomeLoader";
+import { ioLoader } from "../Loaders/IoLoader";
+import { mongooseLoader } from "../Loaders/MongooseLoader";
+import { expressLoader } from "../Loaders/ExpressLoader";
+import { homeLoader } from "../Loaders/HomeLoader";
 bootstrapMicroframework({
     loaders:[
         ioLoader,

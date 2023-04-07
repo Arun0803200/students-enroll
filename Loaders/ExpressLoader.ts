@@ -3,8 +3,8 @@ import {Application} from 'express'
 const express = require('express');
 import * as bodyParser from 'body-parser';
 import {useExpressServer} from 'routing-controllers';
-import * as controller from '../common/index.controller';
-import { authorizationChecker } from '../api/authorization/AuthorizationChecker';
+import * as controller from '../src/common/index.controller';
+import { authorizationChecker } from '../src/authorization/AuthorizationChecker';
 
 export const expressLoader: MicroframeworkLoader = async(settings: MicroframeworkSettings) => {
     console.log('expres........');

@@ -15,16 +15,20 @@
       "class-validator": "^0.13.2",
       "cors": "^2.8.5",
       "express": "^4.18.2",
+      "fast-glob": "^3.2.12",
       "jsonwebtoken": "^9.0.0",
       "microframework": "^0.6.4",
       "mongodb": "^5.1.0",
       "mongoose": "^5.7.7",
+      "path": "^0.12.7",
       "pg": "^8.4.0",
       "reflect-metadata": "^0.1.13",
       "routing-controllers": "^0.9.0",
       "typedi": "^0.8.0"
    },
    "scripts": {
-      "start": "ts-node src/app.ts"
+      "start": "npm run create-index && ts-node src/app.ts",
+      "index-controller": "ts-node --pretty Utils/controller.index.ts",
+      "create-index": "npm run index-controller"
    }
 }
