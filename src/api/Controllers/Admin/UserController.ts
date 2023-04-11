@@ -1,7 +1,8 @@
-import { JsonController, Post, Body, Res, BodyParam, Authorized, Get } from "routing-controllers";
+import { JsonController, Post, Body, Res, BodyParam, Authorized, Get, QueryParam, Put, Param } from "routing-controllers";
 import { UserRequest } from "../request/UserRequest";
 import { adminUserModels } from "../../Models/AdminUserModel";
 import { token } from "../../Models/TokenModel";
+import { UpdateUserRequest } from "../request/UpdateUserRequest";
 const bcrypt = require('bcrypt');
 import * as jsonwebtoken from 'jsonwebtoken';
 @JsonController('/admin-user')
@@ -86,7 +87,7 @@ export class UserController {
     // get user list
     @Authorized()
     @Get()
-    public async getUser(@Res() response: any): Promise<any> {
+    public async getUser(@QueryParam('keyword') keyword: string, @QueryParam('limit') limit: number, @QueryParam('offset')offset: number,@Res() response: any): Promise<any> {
         const userData = await adminUserModels.find();
             const successResponse = {
                 status: 1,
@@ -94,5 +95,47 @@ export class UserController {
                 data: userData
             };
             return response.status(200).send(successResponse);
+    }
+
+    // update user API
+    @Put('/:id')
+    public async updateUser(@Param('id') id: string, @Body({validate: true}) userRequest: UpdateUserRequest, @Res() response: any): Promise<any> {
+        const ifUser = await adminUserModels.findOne({_id: id});
+        if (!ifUser) {
+            return response.status(400).send({status: 0, message: 'Invalid user Id !!'});
+        }
+        ifUser.address1 = userRequest.address1;
+        ifUser.address2 = userRequest.address2;
+        ifUser.city = userRequest.city;
+        ifUser.state = userRequest.state;
+        ifUser.country = userRequest.country;
+        ifUser.mobileNumber = userRequest.mobileNumber;
+        ifUser.firstName = userRequest.firstName;
+        ifUser.lastName = userRequest.lastName;
+        const updateUser = await ifUser.save();
+        if (updateUser) {
+            const successResponse = {
+                status: 1,
+                message: 'Successfully update the user !!'
+            }
+            return response.status(200).send(successResponse);
+        }
+        return response.status(400).send({status: 0, message: 'Unable to update the User !!'});
+    }
+
+    // Detail api
+    @Get('/:id')
+    public async userDetail(@Param('id') id: string, @Res() response: any): Promise<any> {
+        console.log('haiiiiiiiiiiii', id)
+        const ifUser = await adminUserModels.findOne({_id: id});
+        if (!ifUser) {
+            return response.status(400).send({status: 0, message: 'Unable to get the user detail !!'});
+        }
+        const successExample = {
+            status: 1,
+            message: 'Successfully got the user detail',
+            data: ifUser
+        }
+        return response.status(200).send(successExample);
     }
 }
