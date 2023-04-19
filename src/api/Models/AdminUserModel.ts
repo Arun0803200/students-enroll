@@ -61,6 +61,26 @@ export const adminUserSchema = new Schema({
         type: String,
         required: false
     },
+    universityName: {
+        type: String,
+        required: true
+    },
+    collegeName: {
+        type: String,
+        required: true
+    },
+    collegeCode: {
+        type: String,
+        required: true
+    },
+    collegeImageContainerName: {
+        type: String,
+        required: false
+    },
+    collegeImageName: {
+        type: String,
+        required: false
+    }
 }, optionalaSchma);
 
 export const adminUserModels:Model<AdminUserModel> = model<AdminUserModel>('adminUserSchema', adminUserSchema, 'adminUserSchema');

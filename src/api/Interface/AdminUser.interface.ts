@@ -14,6 +14,11 @@ export interface AdminUser {
     state: string;
     country: string;
     mobileNumber: string;
+    universityName: string;
+    collegeName: string;
+    collegeCode: string;
+    collegeImageContainerName: string;
+    collegeImageName: string;
 }
 
 export interface AdminUserModel extends Document, AdminUser {}
