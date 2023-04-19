@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { JsonController, Post, Body, Res, BodyParam, Authorized, Get, QueryParam, Put, Param } from "routing-controllers";
 import { UserRequest } from "../request/UserRequest";
 import { adminUserModels } from "../../Models/AdminUserModel";
@@ -66,6 +67,8 @@ export class UserController {
         if (!comparePassword) {
             return response.status(400).send({status: 0, message: 'Invalid password !!'});
         }
+        console.log(process.env.JWT_TOKEN, 'tokennnnnnnnn');
+        
         const tokens = await jsonwebtoken.sign({userId: findUser._id, role: 'admin-user'}, 'fsha%@%xcb754wejh');
         const newToken: any = new token();
         newToken.token = token;
@@ -85,7 +88,7 @@ export class UserController {
     }
 
     // get user list
-    @Authorized()
+    // @Authorized()
     @Get()
     public async getUser(@QueryParam('keyword') keyword: string, @QueryParam('limit') limit: number, @QueryParam('offset')offset: number,@Res() response: any): Promise<any> {
         const userData = await adminUserModels.find();
