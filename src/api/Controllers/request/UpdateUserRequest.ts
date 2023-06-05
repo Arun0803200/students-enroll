@@ -7,5 +7,8 @@ export class UpdateUserRequest {
     public state: string;
     public country: string;
     public mobileNumber: string;
+    public universityName: string;
+    public collegeName: string;
+    public collegeCode: string;
  }
  

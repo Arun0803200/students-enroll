@@ -5,7 +5,7 @@ export const mongooseLoader: MicroframeworkLoader = async(settings: Microframewo
     console.log('mongoose.........');
     
     if (settings) {
-    const db = "mongodb://localhost:27017/Arundhika";
+    const db = "mongodb://0.0.0.0:27017/Arundhika";
     const connection = mongoose.connect(db, {
         useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true, useFindAndModify: false
     }).then((res: any) => {
