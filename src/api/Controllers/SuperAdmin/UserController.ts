@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { JsonController, Post, Body, Res } from "routing-controllers";
 import { UserRequest } from "../request/UserRequest";
 import { superAdmin } from "../../Models/SuperAdminUserModel";

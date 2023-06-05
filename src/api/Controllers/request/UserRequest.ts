@@ -9,4 +9,7 @@ export class UserRequest {
    public state: string;
    public country: string;
    public mobileNumber: string;
+   public collegeName: string;
+   public collegeCode: string;
+   public universityName: string;
 }
