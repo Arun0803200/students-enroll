@@ -1,1 +1,41 @@
-<h1> Welcome EJS </h1>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>A4 Size Page with Center Alignment</title>
+  <style>
+    /* .content {
+      display: grid;
+      grid-template-columns: 1fr;
+      justify-content: center;
+      align-content: center;
+    } */
+    body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60vh;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 1fr;
+      justify-items: center;
+      background-color: rgb(149, 149, 199);
+      padding: 10px;
+       /* Add your grid properties */
+    }
+    p {
+      font-weight: 600;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="content">
+    <!-- Your content goes here -->
+    <h1>Latest temporary password - Use this to log in and change your new password</h1>
+    <p>Password: Welcome123$</p>
+    <p>Thank You !!</p>
+  </div>
+</body>
+</html>
