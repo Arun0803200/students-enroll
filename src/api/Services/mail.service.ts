@@ -1,11 +1,19 @@
 const nodemailer = require('nodemailer');
 import { Service } from "typedi";
-
+import * as ejs from 'ejs';
+import * as path from 'path'
 @Service()
 export class MailService {
     public async sendMail(): Promise<any> {
-        console.log('yes enterrrrrrrrr');
-        return new Promise((resolve, reject) => {
+        const amqp = require('amqplib');
+        const connection = await amqp.connect('amqp://localhost');
+        const channel = await connection.createConfirmChannel();
+        await channel.assertQueue('send-mail');
+        channel.consume('send-mail', async (message) => {
+            console.log('Received message from jothika:', message.content.toString());
+            channel.ack(message);
+        })
+        return new Promise(async (resolve, reject) => {
             let mailTransporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
@@ -18,16 +26,29 @@ export class MailService {
                 from: 'noreply@gmail.com',
                 to: 'kuttyarun1066@gmail.com',
                 subject: 'Accept for Love',
-                text: 'Hai Jothika, your Love was accepetd by Arun, I love You <3..... : )'
+                html: ''
             };
 
-            mailTransporter.sendMail(mailDetails, function(err, data) {
+
+            const directoryPath = path.join(process.cwd(), 'views', 'arundhika.ejs');
+            const fs = require('fs');
+
+            // Load the EJS template
+            // const emailTemplate = fs.readFileSync(directoryPath, 'utf-8');           
+            await ejs.renderFile(directoryPath, async(err, data) => {
                 if(err) {
-                    reject(err);
+                    throw err;
                 } else {
-                    resolve(data);
+                    mailDetails.html = data
+                    await mailTransporter.sendMail(mailDetails, function(err, data) {
+                        if(err) {
+                            reject(err);
+                        } else {
+                            resolve(data);
+                        }
+                    });
                 }
-            });
+            })
         });
     }
 }

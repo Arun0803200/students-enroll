@@ -1,0 +1,163 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "descriptuon": "sample server",
+        "version": "1.0.0",
+        "title": "Student Enrollment",
+        "contact": {
+            "email": "arun.ang.js@gmail.com"
+        }
+    },
+    "host": "localhost:3000",
+    "basePath": "/api",
+    "tags": [
+        {
+            "name": "chat",
+            "description": "Chat Master"
+        }
+    ],
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "paths": {
+        "/chat": {
+            "post": {
+                "tags": ["chat"],
+                "Summary": "Create chat questions and answer",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/createChat"
+                        }
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "description": "Error Message",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "default": "1"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "default": "Inalid data"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Success Message",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "default": "Successfully got the data !!"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "tags": ["chat"],
+                "Summary": "Get detail of a chat questions",
+                "parameters": [
+                    {
+                        "name": "keyword",
+                        "in": "query",
+                        "type": "string",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "default": "1"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "default": "Successfully get the data !!"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/chat/upload-file": {
+            "post": {
+                "tags": ["chat"],
+                "Summary": "Bulk chat import",
+                "consumes": ["multipart/form-data"],
+                "parameters": [
+                    {
+                        "name": "file",
+                        "in": "formData",
+                        "type": "file",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "400": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "default": "0"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "default": "Just give zip file extension !!"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "default": "1"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "default": "Success...!!!"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "createChat": {
+            "type": "object",
+            "properties": {
+                "senderData": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "receiverData": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

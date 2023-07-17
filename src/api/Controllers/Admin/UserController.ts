@@ -8,6 +8,7 @@ import { MailService } from '../../Services/mail.service';
 const bcrypt = require('bcrypt');
 import * as jsonwebtoken from 'jsonwebtoken';
 import { ImageSerice } from '../../Services/ImageSerice';
+import path = require('path');
 @JsonController('/admin-user')
 export class UserController {
     constructor(private mailService: MailService, private imageSerice: ImageSerice) {}
@@ -160,7 +161,7 @@ export class UserController {
     }
 
     // Detail api
-    @Get('/:id')
+    @Get('/detail/:id')
     public async userDetail(@Param('id') id: string, @Res() response: any): Promise<any> {
         console.log('haiiiiiiiiiiii', id)
         const ifUser = await adminUserModels.findOne({_id: id});
@@ -195,6 +196,16 @@ export class UserController {
     @Post('/send')
     public async sendMail(@Res() response: any): Promise<any> {
         console.log('haiiiiiii')
+        const amqp = require('amqplib');
+        const connection = await amqp.connect('amqp://localhost');
+        const channel = await connection.createConfirmChannel();
+        await channel.assertQueue('send-mail');
+        const mailData: any = {
+            mailId: 'kuttyarun1066@gmail.com',
+            userName: 'kuttyarun',
+            password: 'Welcome123$'
+        }
+        channel.sendToQueue('send-mail', Buffer.from(JSON.stringify(mailData)));
         const mailSender: any = await this.mailService.sendMail();
         if (mailSender) {
             return response.status(200).send({status:1, message: 'Successfully send !!'})
@@ -213,5 +224,41 @@ export class UserController {
             return response.status(200).send({status: 1, message: 'Successfully upload the image !!'});
         }
         return response.status(400).send({status:0, message: 'Invalid directory name !!'});
+    }
+
+    @Post('/rabbitmq')
+    public async rabbitMq(@BodyParam('data') data: string, @Res() response: any): Promise<any>{
+        const amqp = require('amqplib');
+        const connection = await amqp.connect('amqp://localhost');
+        const channel = await connection.createChannel();
+        const queueName = 'myQueue';
+        await channel.assertQueue(queueName);
+        await channel.assertQueue('jothika');
+        const mailData: any = {
+            mailId: 'kuttyarun1066@gmail.com',
+            userName: 'kuttyarun',
+            password: 'Welcome123$'
+        };
+        const message = 'Hello, RabbitMQ!';
+        const messageFromJoo = 'I Love You :)'
+        channel.sendToQueue(queueName, Buffer.from(message));
+        channel.sendToQueue('jothika', Buffer.from(JSON.stringify(mailData)));
+        const messages = []
+
+        // consume
+        channel.consume(queueName, (message) => {
+            messages.push(message.content.toString());
+        console.log('Received message:', message.content.toString());
+        channel.ack(message);
+        });
+        let resultData: any
+        channel.consume('jothika', async (message) => { 
+            messages.push(message.content.toString());
+        console.log('Received message from jothika:', message.content.toString());
+        resultData = await message.content.toString();
+        channel.ack(message);
+        });
+        console.log(resultData, 'dataaaaaaaaaaaaaaaaaaaaaaaaaaa')
+        return response.status(200).send({status: 200, message: resultData});
     }
 }
