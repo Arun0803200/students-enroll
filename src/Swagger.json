@@ -12,8 +12,12 @@
     "basePath": "/api",
     "tags": [
         {
-            "name": "chat",
+            "name": "Chat",
             "description": "Chat Master"
+        },
+        {
+            "name": "Send Mail",
+            "description": "send mail apis"
         }
     ],
     "schemes": [
@@ -23,7 +27,7 @@
     "paths": {
         "/chat": {
             "post": {
-                "tags": ["chat"],
+                "tags": ["Chat"],
                 "Summary": "Create chat questions and answer",
                 "parameters": [
                     {
@@ -67,7 +71,7 @@
                 }
             },
             "get": {
-                "tags": ["chat"],
+                "tags": ["Chat"],
                 "Summary": "Get detail of a chat questions",
                 "parameters": [
                     {
@@ -98,7 +102,7 @@
         },
         "/chat/upload-file": {
             "post": {
-                "tags": ["chat"],
+                "tags": ["Chat"],
                 "Summary": "Bulk chat import",
                 "consumes": ["multipart/form-data"],
                 "parameters": [
@@ -136,6 +140,45 @@
                                 "message": {
                                     "type": "string",
                                     "default": "Success...!!!"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/admin-user/send": {
+            "post": {
+                "Summary": "Send mail for forget password",
+                "consumes": ["multipart/form-data"],
+                "tags": ["Send Mail"],
+                "responses": {
+                    "400": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "default": "0"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "default": "Invalid mail Id !!"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "schema": {
+                            "type":"object",
+                            "properties": {
+                                "status": {
+                                    "type": "integer",
+                                    "default": "1"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "default": "Successfully send the mail !!"
                                 }
                             }
                         }

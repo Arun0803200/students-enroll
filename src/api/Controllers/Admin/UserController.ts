@@ -9,6 +9,12 @@ const bcrypt = require('bcrypt');
 import * as jsonwebtoken from 'jsonwebtoken';
 import { ImageSerice } from '../../Services/ImageSerice';
 import path = require('path');
+import { Response } from 'express';
+const ejs = require('ejs');
+const fs = require('fs');
+const pdf =  require('html-pdf');
+const puppeteer = require('puppeteer');
+const PDFDocument = require('pdfkit');
 @JsonController('/admin-user')
 export class UserController {
     constructor(private mailService: MailService, private imageSerice: ImageSerice) {}
@@ -195,7 +201,6 @@ export class UserController {
     }
     @Post('/send')
     public async sendMail(@Res() response: any): Promise<any> {
-        console.log('haiiiiiii')
         const amqp = require('amqplib');
         const connection = await amqp.connect('amqp://localhost');
         const channel = await connection.createConfirmChannel();
@@ -206,11 +211,8 @@ export class UserController {
             password: 'Welcome123$'
         }
         channel.sendToQueue('send-mail', Buffer.from(JSON.stringify(mailData)));
-        const mailSender: any = await this.mailService.sendMail();
-        if (mailSender) {
-            return response.status(200).send({status:1, message: 'Successfully send !!'})
-        }
-        return response.status(400).send({status: 0, message: 'Invalid mail Id !!'})
+            return response.status(200).send({status:1, message: 'Successfully send the mail !!'});
+        // return response.status(400).send({status: 0, message: 'Invalid mail Id !!'})
     }
 
     @Post('/upload-image')
@@ -261,4 +263,73 @@ export class UserController {
         console.log(resultData, 'dataaaaaaaaaaaaaaaaaaaaaaaaaaa')
         return response.status(200).send({status: 200, message: resultData});
     }
+
+    // convert html to pdf
+    @Get('/html-pdsf')
+    public async htmlToPdf(@Res() response: any): Promise<any> {
+        try {
+            const directoryPath = path.join(process.cwd(), 'views', 'arundhika.ejs');
+      
+            const htmlData = await ejs.renderFile(directoryPath);
+            console.log(htmlData, 'htmlDatahtmlData', directoryPath);
+      
+            const pdfDoc = new PDFDocument();
+      
+            const buffers: any[] = []; // Store PDF chunks in an array
+      
+            pdfDoc.on('data', (chunk) => buffers.push(chunk));
+            pdfDoc.on('end', () => {
+              const pdfBuffer = Buffer.concat(buffers);
+      
+              response.setHeader('Content-Disposition', 'attachment; filename="output.pdf"');
+              response.setHeader('Content-Type', 'application/pdf');
+              response.end(pdfBuffer); // Send the PDF buffer as the response
+              console.log('PDF generation completed.');
+            });
+      
+            const data = pdfDoc.text(htmlData);
+            pdfDoc.end();
+            return response.download(data);
+          } catch (error) {
+            console.error('Error generating PDF:', error);
+            response.status(500).send('Error generating PDF');
+          }
+    }
+    @Get('/html-pdf')
+  public async htmlToPdfs(@Res() response: Response): Promise<any> {
+    try {
+        const directoryPath = path.join(process.cwd(), 'views', 'arundhika.ejs');
+  
+        const data = {
+          name: 'John Doe', // Add any data needed for the EJS template here
+        };
+  
+        const htmlData = await new Promise<string>((resolve, reject) => {
+          ejs.renderFile(directoryPath, data, (err, html) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(html);
+            }
+          });
+        });
+  
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.setContent(htmlData);
+  
+        // Add a small delay (e.g., 1 second) to wait for asynchronous rendering
+        await page.waitForTimeout(1000);
+  
+        const pdfBuffer = await page.pdf({ format: 'Letter' });
+        await browser.close();
+  
+        response.setHeader('Content-Disposition', 'attachment; filename="output.pdf"');
+        response.setHeader('Content-Type', 'application/pdf');
+        return response.send(pdfBuffer); // Send the PDF buffer as the response
+      } catch (error) {
+        console.error('Error generating PDF:', error);
+        return response.status(500).send('Error generating PDF');
+      }
+  }
 }
