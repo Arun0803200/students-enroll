@@ -3,39 +3,156 @@
 <head>
   <title>A4 Size Page with Center Alignment</title>
   <style>
-    /* .content {
-      display: grid;
-      grid-template-columns: 1fr;
-      justify-content: center;
-      align-content: center;
-    } */
-    body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 60vh;
-    }
-
-    .content {
-      display: grid;
-      grid-template-columns: 1fr;
-      justify-items: center;
-      background-color: rgb(149, 149, 199);
-      padding: 10px;
-       /* Add your grid properties */
-    }
     p {
       font-weight: 600;
     }
+    .common {
+      display: grid;
+      grid-template-columns: 20% auto; /* Single column grid */
+      padding: 20px;
+      border: 5px;
+      box-sizing: border-box;
+      position: relative; /* Required for positioning the pseudo-element */
+      margin-bottom: 20px;
+    }
+
+    /* .personal { */
+      /* display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: rgb(41, 37, 37);
+      color: white;
+      height: 100%;
+    } */
+
+    .content {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      margin-bottom: 0%;
+      /* align-items: center; */
+      /* margin-left: 5%; */
+      /* background-color: blue; */
+    }
+
+    .personal {
+  /* Move the h3 element to the left */
+  background-color: rgb(41, 37, 37);
+  color: white;
+  height: 100%;
+}
+
+.personal .psn-img {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  margin-left: 39px;
+  margin-right: 39px;
+}
+
+.personal .psn-img img{
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+}
+
+.personal h3 {
+  margin: 0;
+  padding: 10px;
+}
+
+.personal p {
+  margin: 0;
+  padding: 10px;
+  font-weight: 400;
+}
+
+.content .heading .name-list{
+  float: left;
+  margin-left: 0px;
+  margin-bottom: 0px;
+}
+
+.content .heading .detail-list {
+  float: right;
+  margin-right: 0px;
+}
+
+tr {
+    padding: 5px;
+  }
+/* Media queries for different screen sizes */
+@media screen and (max-width: 480px) {
+  /* Adjust image size for small screens */
+  img {
+    max-width: 90%;
+  }
+}
+
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  /* Adjust image size for medium screens */
+  img {
+    max-width: 70%;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  /* Adjust image size for large screens */
+  img {
+    max-width: 50%;
+  }
+}
 
   </style>
 </head>
 <body>
-  <div class="content">
-    <!-- Your content goes here -->
-    <h1>Latest temporary password - Use this to log in and change your new password</h1>
-    <p>Password: Welcome123$</p>
-    <p>Thank You !!</p>
+  <div class="common">
+    <div class="personal">
+      <div class="psn-img">
+        <img src="https://img.freepik.com/free-photo/smiling-female-business-leader-with-arms-crossed_1262-3089.jpg?w=360" alt="">
+      </div>
+      <h3>ABOUT ME</h3>
+      <p><%= objective %></p>
+      <hr>
+      <h3>WEBSITE & SOCIAL lINKS</h3>
+      <% socialMedia.forEach((value) => { %>
+        <p><%= value.title %>: <a href= <%= value.link %> ><%= value.link %></a></p>
+      <% }); %>
+    </div>
+    <div class="content">
+      <div class="heading">
+        <div class="name-list">
+          <h1><%= name %></h1>
+          <h4><%= jobPosition %></h4>
+        </div>
+        <div class="detail-list">
+              <p>Email: <a href=<%= email %>><%= email %></a></p>
+              <p>Phone No: <%= phoneNumber %></p>
+              <p>Address: <%= address %></p>
+        </div>
+      </div>
+      <div>
+        <hr>
+        <h1>WORK EXPIRENCE</h1>
+        <table style="border-collapse: collapse; width: 100%;">
+          <% experience.forEach((data) => { %>
+            <tr>
+              <td style="padding: 15px;"><b><%= data.companyName %></b><br> <%= data.city %> <br> <%= data.duration %></td>
+              <td style="padding: 15px;"> <b><%= data.position %></b><br> <%= data.summary %></td>
+            </tr>
+          <% }); %>
+        </table>
+        <h1>EDUCATION</h1>
+        <table style="border-collapse: collapse;" >
+          <% education.forEach((eduValue) => { %>
+            <tr>
+              <td style="padding: 15px;"><b><%= eduValue.collageName %></b><br><%= eduValue.branchName %>(<%= eduValue.degreeName %>) <br> <%= eduValue.duration %></td>
+            </tr>
+          <% }); %>
+        </table>
+      </div>
+    </div>
   </div>
 </body>
 </html>

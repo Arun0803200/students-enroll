@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser';
 import {useExpressServer} from 'routing-controllers';
 import * as controller from '../src/common/index.controller';
 import { authorizationChecker } from '../src/authorization/AuthorizationChecker';
+import { MailService } from "../src/api/Services/mail.service";
 
 export const expressLoader: MicroframeworkLoader = async(settings: MicroframeworkSettings) => {    
     const app = express();
@@ -20,6 +21,8 @@ export const expressLoader: MicroframeworkLoader = async(settings: Microframewor
         authorizationChecker: authorizationChecker(connection),
     });
     const expressSerer = expressApp.listen(3000);
+    const newMail = new MailService();
+    newMail.sendMail();
     if (settings) {
         expressApp.set('view engine', 'ejs');
         settings.setData('express_app', expressApp);
