@@ -3,13 +3,13 @@ import { ioLoader } from "../Loaders/IoLoader";
 import { mongooseLoader } from "../Loaders/MongooseLoader";
 import { expressLoader } from "../Loaders/ExpressLoader";
 import { homeLoader } from "../Loaders/HomeLoader";
-import { swaggerLoader } from "../Loaders/SwaggerLoader";
+// import { swaggerLoader } from "../Loaders/SwaggerLoader";
 bootstrapMicroframework({
     loaders:[
         ioLoader,
         mongooseLoader,
         expressLoader,
-        swaggerLoader,
+        // swaggerLoader,
         homeLoader,
     ]
 }).then(()=>{console.log('app running......')}).catch((err) => {console.log(err)});

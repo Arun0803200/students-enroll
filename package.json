@@ -4,6 +4,7 @@
    "description": "Awesome project developed with mongodb.",
    "type": "commonjs",
    "devDependencies": {
+      "@types/express": "^4.17.21",
       "@types/jest": "^29.5.1",
       "@types/node": "^16.18.23",
       "jest": "^29.5.0",
