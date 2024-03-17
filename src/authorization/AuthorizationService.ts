@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 export class AuthSerice {
     constructor() {}
 
-    public async checkingAuthorization(req: express.request): Promise<any> {
+    public async checkingAuthorization(req: express.Request): Promise<any> {
         const header = await req.headers.authorization;
         const authorization = header.split(' ');
         if (authorization[0] !== 'Bearer') {
