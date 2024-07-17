@@ -203,6 +203,7 @@ export class UserController {
     public async sendMail(@Res() response: any): Promise<any> {
         const amqp = require('amqplib');
         const connection = await amqp.connect('amqp://localhost');
+        // const connection = await amqp.connect('amqp://rabbitmq');
         const channel = await connection.createConfirmChannel();
         await channel.assertQueue('send-mail');
         const mailData: any = {
@@ -232,6 +233,7 @@ export class UserController {
     public async rabbitMq(@BodyParam('data') data: string, @Res() response: any): Promise<any>{
         const amqp = require('amqplib');
         const connection = await amqp.connect('amqp://localhost');
+        // const connection = await amqp.connect('amqp://rabbitmq');
         const channel = await connection.createChannel();
         const queueName = 'myQueue';
         await channel.assertQueue(queueName);
