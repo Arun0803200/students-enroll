@@ -23,6 +23,7 @@ export const expressLoader: MicroframeworkLoader = async(settings: Microframewor
     const expressSerer = expressApp.listen(3000);
     const newMail = new MailService();
     newMail.sendMail();
+    newMail.delayQueue();
     if (settings) {
         expressApp.set('view engine', 'ejs');
         settings.setData('express_app', expressApp);
