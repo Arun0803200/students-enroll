@@ -12,29 +12,29 @@ import path = require('path');
 import { Response } from 'express';
 const ejs = require('ejs');
 const fs = require('fs');
-const pdf =  require('html-pdf');
+const pdf = require('html-pdf');
 const puppeteer = require('puppeteer');
 const PDFDocument = require('pdfkit');
 @JsonController('/admin-user')
 export class UserController {
-    constructor(private mailService: MailService, private imageSerice: ImageSerice) {}
+    constructor(private mailService: MailService, private imageSerice: ImageSerice) { }
 
     // create user
     @Post()
-    public async createUser(@Body({validate: true}) userRequest: any, @Res() response: any): Promise<any> {
+    public async createUser(@Body({ validate: true }) userRequest: any, @Res() response: any): Promise<any> {
         const newUser = new adminUserModels();
-        const ifEmail = await adminUserModels.findOne({email: userRequest.email});
+        const ifEmail = await adminUserModels.findOne({ email: userRequest.email });
         if (ifEmail) {
-            return response.status(400).send({status: 0, message: 'The given email already exists. Please try another email :)'})
+            return response.status(400).send({ status: 0, message: 'The given email already exists. Please try another email :)' })
         }
 
-        const ifFindMobile = await adminUserModels.findOne({mobileNumber: userRequest.mobileNumber });
+        const ifFindMobile = await adminUserModels.findOne({ mobileNumber: userRequest.mobileNumber });
         if (ifFindMobile) {
-            return response.status(400).send({status: 0, message: 'The given mobile number already exists. Please try another mobile number :)'})
+            return response.status(400).send({ status: 0, message: 'The given mobile number already exists. Please try another mobile number :)' })
         }
 
         if (ifEmail && ifFindMobile) {
-            return response.status(400).send({status: 0, message: 'The given email and mobile number already exists. Please try another email and mobile number :)'})
+            return response.status(400).send({ status: 0, message: 'The given email and mobile number already exists. Please try another email and mobile number :)' })
         }
 
         const hasPassword = await bcrypt.hash(userRequest.password, 10);
@@ -43,7 +43,7 @@ export class UserController {
         newUser.email = userRequest.email;
         newUser.isActie = 0;
         newUser.isDelete = 0,
-        newUser.firstName = userRequest.firstName;
+            newUser.firstName = userRequest.firstName;
         newUser.lastName = userRequest.lastName;
         newUser.address1 = userRequest.address1;
         newUser.address2 = userRequest.address2;
@@ -72,17 +72,17 @@ export class UserController {
     // login api
     @Post('/login')
     public async login(@BodyParam('username') username: string, @BodyParam('password') password: string, @Res() response: any): Promise<any> {
-        const findUser: any = await adminUserModels.findOne({username: username});
+        const findUser: any = await adminUserModels.findOne({ username: username });
         if (!findUser) {
-            return response.status(400).send({status: 0, message: 'Invalid username !!'});
+            return response.status(400).send({ status: 0, message: 'Invalid username !!' });
         }
         const comparePassword = await bcrypt.compare(password, findUser.password);
         if (!comparePassword) {
-            return response.status(400).send({status: 0, message: 'Invalid password !!'});
+            return response.status(400).send({ status: 0, message: 'Invalid password !!' });
         }
         console.log(process.env.JWT_TOKEN, 'tokennnnnnnnn');
-        
-        const tokens = await jsonwebtoken.sign({userId: findUser._id, role: 'admin-user'}, 'fsha%@%xcb754wejh');
+
+        const tokens = await jsonwebtoken.sign({ userId: findUser._id, role: 'admin-user' }, 'fsha%@%xcb754wejh');
         const newToken: any = new token();
         newToken.token = token;
         newToken.isActive = 1;
@@ -97,22 +97,22 @@ export class UserController {
             };
             return response.status(200).send(successResponse);
         }
-        return response.status(400).send({status: 0, message: 'Invalid login !!'});
+        return response.status(400).send({ status: 0, message: 'Invalid login !!' });
     }
 
     // get user list
     // @Authorized()
     @Get()
-    public async getUser(@QueryParam('universityName') universityNames: string, @QueryParam('collegeName') collegeNames: string, @QueryParam('limit') limit: number, @QueryParam('offset')offset: number,@Res() response: any): Promise<any> {
+    public async getUser(@QueryParam('universityName') universityNames: string, @QueryParam('collegeName') collegeNames: string, @QueryParam('limit') limit: number, @QueryParam('offset') offset: number, @Res() response: any): Promise<any> {
         let searchCondition = []
         if (universityNames !== '') {
             searchCondition.push({
-                universityName: {$regex : universityNames, $options : 'i'}
+                universityName: { $regex: universityNames, $options: 'i' }
             })
         }
         if (collegeNames !== '') {
             searchCondition.push({
-                collegeName: {$regex : collegeNames, $options : 'i'}
+                collegeName: { $regex: collegeNames, $options: 'i' }
             })
         }
         let findOperation: object
@@ -129,20 +129,20 @@ export class UserController {
         }
         console.log(searchCondition, 'condtionsssss', findOperation)
         const userData = await adminUserModels.find(findOperation).limit(limit).skip(offset);
-            const successResponse = {
-                status: 1,
-                message: 'Successfully get the user list !!',
-                data: userData
-            };
-            return response.status(200).send(successResponse);
+        const successResponse = {
+            status: 1,
+            message: 'Successfully get the user list !!',
+            data: userData
+        };
+        return response.status(200).send(successResponse);
     }
 
     // update user API
     @Put('/:id')
-    public async updateUser(@Param('id') id: string, @Body({validate: true}) userRequest: any, @Res() response: any): Promise<any> {
-        const ifUser = await adminUserModels.findOne({_id: id});
+    public async updateUser(@Param('id') id: string, @Body({ validate: true }) userRequest: any, @Res() response: any): Promise<any> {
+        const ifUser = await adminUserModels.findOne({ _id: id });
         if (!ifUser) {
-            return response.status(400).send({status: 0, message: 'Invalid user Id !!'});
+            return response.status(400).send({ status: 0, message: 'Invalid user Id !!' });
         }
         ifUser.address1 = userRequest.address1;
         ifUser.address2 = userRequest.address2;
@@ -163,16 +163,16 @@ export class UserController {
             }
             return response.status(200).send(successResponse);
         }
-        return response.status(400).send({status: 0, message: 'Unable to update the User !!'});
+        return response.status(400).send({ status: 0, message: 'Unable to update the User !!' });
     }
 
     // Detail api
     @Get('/detail/:id')
     public async userDetail(@Param('id') id: string, @Res() response: any): Promise<any> {
         console.log('haiiiiiiiiiiii', id)
-        const ifUser = await adminUserModels.findOne({_id: id});
+        const ifUser = await adminUserModels.findOne({ _id: id });
         if (!ifUser) {
-            return response.status(400).send({status: 0, message: 'Unable to get the user detail !!'});
+            return response.status(400).send({ status: 0, message: 'Unable to get the user detail !!' });
         }
         const successExample = {
             status: 1,
@@ -185,11 +185,11 @@ export class UserController {
     //Delete Api
     @Delete('/:id')
     public async deleteUser(@Param('id') id: string, @Res() response: any): Promise<any> {
-        const ifUser = await adminUserModels.findOne({_id: id});
+        const ifUser = await adminUserModels.findOne({ _id: id });
         if (!ifUser) {
-            return response.status(400).send({status: 0, message: 'Inlid user is !!'});
+            return response.status(400).send({ status: 0, message: 'Inlid user is !!' });
         }
-        const deleteUser = await adminUserModels.deleteOne({_id: id});
+        const deleteUser = await adminUserModels.deleteOne({ _id: id });
         if (deleteUser) {
             const successExample = {
                 status: 1,
@@ -197,7 +197,7 @@ export class UserController {
             }
             return response.status(200).send(deleteUser);
         }
-        return response.status(400).send({status:0, message: 'Unable to deleted a User !!'});
+        return response.status(400).send({ status: 0, message: 'Unable to deleted a User !!' });
     }
     @Post('/send')
     public async sendMail(@Res() response: any): Promise<any> {
@@ -212,7 +212,7 @@ export class UserController {
             password: 'Welcome123$'
         }
         channel.sendToQueue('send-mail', Buffer.from(JSON.stringify(mailData)));
-            return response.status(200).send({status:1, message: 'Successfully send the mail !!'});
+        return response.status(200).send({ status: 1, message: 'Successfully send the mail !!' });
         // return response.status(400).send({status: 0, message: 'Invalid mail Id !!'})
     }
 
@@ -224,13 +224,13 @@ export class UserController {
         const bufferData: any = Buffer.from(data[1]);
         const uploadImage = await this.imageSerice.uploadImage('uploads', bufferData, type)
         if (uploadImage) {
-            return response.status(200).send({status: 1, message: 'Successfully upload the image !!'});
+            return response.status(200).send({ status: 1, message: 'Successfully upload the image !!' });
         }
-        return response.status(400).send({status:0, message: 'Invalid directory name !!'});
+        return response.status(400).send({ status: 0, message: 'Invalid directory name !!' });
     }
 
     @Post('/rabbitmq')
-    public async rabbitMq(@BodyParam('data') data: string, @Res() response: any): Promise<any>{
+    public async rabbitMq(@BodyParam('data') data: string, @Res() response: any): Promise<any> {
         const amqp = require('amqplib');
         const connection = await amqp.connect('amqp://localhost');
         // const connection = await amqp.connect('amqp://rabbitmq');
@@ -252,86 +252,197 @@ export class UserController {
         // consume
         channel.consume(queueName, (message) => {
             messages.push(message.content.toString());
-        console.log('Received message:', message.content.toString());
-        channel.ack(message);
+            console.log('Received message:', message.content.toString());
+            channel.ack(message);
         });
         let resultData: any
-        channel.consume('jothika', async (message) => { 
+        channel.consume('jothika', async (message) => {
             messages.push(message.content.toString());
-        console.log('Received message from jothika:', message.content.toString());
-        resultData = await message.content.toString();
-        channel.ack(message);
+            console.log('Received message from jothika:', message.content.toString());
+            resultData = await message.content.toString();
+            channel.ack(message);
         });
         console.log(resultData, 'dataaaaaaaaaaaaaaaaaaaaaaaaaaa')
-        return response.status(200).send({status: 200, message: resultData});
+        return response.status(200).send({ status: 200, message: resultData });
     }
 
+    @Get('/rabbitmq-exchange')
+    public async rabbitMqExch(@Res() res: any): Promise<any> {
+        const amqp = require('amqplib');
+        const connection = await amqp.connect("amqp://localhost");
+        const channel = await connection.createChannel();
+    
+        const mainExchange = "main_exchange";
+        const delayExchange = "delay_exchange_1500";
+        const delayQueue = "delay_queue_1500";
+        const mainQueue = "main_queue";
+    
+        // Declare exchanges
+        await channel.assertExchange(mainExchange, "direct", { durable: true });
+        await channel.assertExchange(delayExchange, "direct", { durable: true }); // FIX: Declare delay exchange
+    
+        // Declare queues
+        await channel.assertQueue(mainQueue, { durable: true });
+        await channel.assertQueue(delayQueue, {
+            durable: true,
+            arguments: {
+                "x-message-ttl": 15000, // 15 seconds delay
+                "x-dead-letter-exchange": mainExchange, // Move message here after delay
+                "x-dead-letter-routing-key": "route_key",
+            },
+        });
+    
+        // Bind queues to exchanges
+        await channel.bindQueue(mainQueue, mainExchange, "route_key");
+        await channel.bindQueue(delayQueue, delayExchange, "delay_route");
+    
+        // Publish message to delay queue
+        const message = "Hello, delayed world!";
+        channel.publish(delayExchange, "delay_route", Buffer.from(message));
+    
+        return res.status(200).send({ status: 1, message: 'Successfully sent to the queue' });
+    }    
     // convert html to pdf
     @Get('/html-pdsf')
     public async htmlToPdf(@Res() response: any): Promise<any> {
         try {
             const directoryPath = path.join(process.cwd(), 'views', 'arundhika.ejs');
-      
+
             const htmlData = await ejs.renderFile(directoryPath);
             console.log(htmlData, 'htmlDatahtmlData', directoryPath);
-      
+
             const pdfDoc = new PDFDocument();
-      
+
             const buffers: any[] = []; // Store PDF chunks in an array
-      
+
             pdfDoc.on('data', (chunk) => buffers.push(chunk));
             pdfDoc.on('end', () => {
-              const pdfBuffer = Buffer.concat(buffers);
-      
-              response.setHeader('Content-Disposition', 'attachment; filename="output.pdf"');
-              response.setHeader('Content-Type', 'application/pdf');
-              response.end(pdfBuffer); // Send the PDF buffer as the response
-              console.log('PDF generation completed.');
+                const pdfBuffer = Buffer.concat(buffers);
+
+                response.setHeader('Content-Disposition', 'attachment; filename="output.pdf"');
+                response.setHeader('Content-Type', 'application/pdf');
+                response.end(pdfBuffer); // Send the PDF buffer as the response
+                console.log('PDF generation completed.');
             });
-      
+
             const data = pdfDoc.text(htmlData);
             pdfDoc.end();
             return response.download(data);
-          } catch (error) {
+        } catch (error) {
             console.error('Error generating PDF:', error);
             response.status(500).send('Error generating PDF');
-          }
+        }
     }
     @Get('/html-pdf')
-  public async htmlToPdfs(@Res() response: Response): Promise<any> {
-    try {
-        const directoryPath = path.join(process.cwd(), 'views', 'arundhika.ejs');
-  
-        const data = {
-          name: 'John Doe', // Add any data needed for the EJS template here
-        };
-  
-        const htmlData = await new Promise<string>((resolve, reject) => {
-          ejs.renderFile(directoryPath, data, (err, html) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(html);
+    public async htmlToPdfs(@Res() response: Response): Promise<any> {
+        try {
+            const directoryPath = path.join(process.cwd(), 'views', 'arundhika.ejs');
+
+            const data = {
+                name: 'John Doe', // Add any data needed for the EJS template here
+            };
+
+            const htmlData = await new Promise<string>((resolve, reject) => {
+                ejs.renderFile(directoryPath, data, (err, html) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(html);
+                    }
+                });
+            });
+
+            const browser = await puppeteer.launch();
+            const page = await browser.newPage();
+            await page.setContent(htmlData);
+
+            // Add a small delay (e.g., 1 second) to wait for asynchronous rendering
+            await page.waitForTimeout(1000);
+
+            const pdfBuffer = await page.pdf({ format: 'Letter' });
+            await browser.close();
+
+            response.setHeader('Content-Disposition', 'attachment; filename="output.pdf"');
+            response.setHeader('Content-Type', 'application/pdf');
+            return response.send(pdfBuffer); // Send the PDF buffer as the response
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            return response.status(500).send('Error generating PDF');
+        }
+    }
+    @Post('test-rabbitmq')
+    public async testRabbitMQ(@Res() response: any): Promise<any> {
+        const amqp = require('amqplib');
+        const connection = await amqp.connect('amqp:localhost');
+        const channel = await connection.createConfirmChannel();
+        const queueData = {
+            name: 'Arun',
+            age: 24,
+            phoneNo: '233232332',
+            city: 'TVM',
+            state: 'TN',
+            country: 'IND'
+        }
+        await channel.assertQueue('test-rabbit');
+        const sendData = await channel.sendToQueue('test-rabbit', queueData);
+        return response.status(200).send({
+            status: 1,
+            message: 'Successfully send message',
+            data: sendData
+        })
+    }
+
+    @Get('/cash-free')
+    public async cashFree(@Res() response: any): Promise<any> {
+        const { Cashfree } = require('cashfree-pg');
+        Cashfree.XEnvironment = Cashfree.Environment.SANDBOX;
+
+        const request = {
+            order_amount: 1.00,
+            order_currency: 'INR',
+            order_id: 'ORD_006',
+            customer_details: {
+                customer_id: 'CUST_001',
+                customer_phone: '9999999999',
+                customer_name: 'Arundhika',
+                customer_email: 'kuttyarun1066@gmail.com'
+            },
+            order_meta: {
+                notify_url: 'http://localhost:3000/api/admin-user/notify'
             }
-          });
+        }
+        const getCashFreeData = await Cashfree.PGCreateOrder("2023-08-01", request);
+        return response.status(200).send({
+            status: 1,
+            message: 'Success..',
+            data: getCashFreeData.data,
         });
-  
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        await page.setContent(htmlData);
-  
-        // Add a small delay (e.g., 1 second) to wait for asynchronous rendering
-        await page.waitForTimeout(1000);
-  
-        const pdfBuffer = await page.pdf({ format: 'Letter' });
-        await browser.close();
-  
-        response.setHeader('Content-Disposition', 'attachment; filename="output.pdf"');
-        response.setHeader('Content-Type', 'application/pdf');
-        return response.send(pdfBuffer); // Send the PDF buffer as the response
-      } catch (error) {
-        console.error('Error generating PDF:', error);
-        return response.status(500).send('Error generating PDF');
-      }
-  }
+    }
+
+    @Post('/notify')
+    public async notify(@Body() data: any, @Res() response: any): Promise<any> {
+        // Log received data for verification (optional)
+        console.log('Received notification:', data);
+
+        // Extract important data fields for verification
+        const { order_id, order_amount, reference_id, tx_status, tx_time, signature } = data;
+
+        // Process the payment status (Update order status in your database)
+        if (tx_status === 'SUCCESS') {
+            // Handle success (e.g., update order status to 'paid')
+            // Your logic here
+            console.log('Payment successful for order:', order_id);
+        } else if (tx_status === 'FAILED') {
+            // Handle failure
+            console.log('Payment failed for order:', order_id);
+        }
+
+        console.log({ order_id, order_amount, reference_id, tx_status, tx_time, signature });
+        // Return a response to Cashfree
+        return response.status(200).send({
+            status: 1,
+            message: 'Notification processed',
+            data: { order_id, order_amount, reference_id, tx_status, tx_time, signature }
+        });
+    }
 }
