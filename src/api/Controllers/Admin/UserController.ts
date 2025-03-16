@@ -1,11 +1,12 @@
 import 'reflect-metadata';
-import { JsonController, Post, Body, Res, BodyParam, Authorized, Get, QueryParam, Put, Param, Delete } from "routing-controllers";
+import { JsonController, Post, Body, Res, BodyParam, Authorized, Get, QueryParam, Put, Param, Delete, Req } from "routing-controllers";
 import { UserRequest } from "../request/UserRequest";
 import { adminUserModels } from "../../Models/AdminUserModel";
 import { token } from "../../Models/TokenModel";
 import { UpdateUserRequest } from "../request/UpdateUserRequest";
 import { MailService } from '../../Services/mail.service';
 const bcrypt = require('bcrypt');
+// import crypto from "crypto";
 import * as jsonwebtoken from 'jsonwebtoken';
 import { ImageSerice } from '../../Services/ImageSerice';
 import path = require('path');
@@ -417,6 +418,63 @@ export class UserController {
             message: 'Success..',
             data: getCashFreeData.data,
         });
+    }
+
+    @Post('/razorpay-order')
+    public async razorpayOrder(@Body({validate: true}) payload: any, @Res() response: any): Promise<any> {
+            try {
+                const Razorpay = require("razorpay");
+
+                const razorpay = new Razorpay({
+                     key_id: "",
+                     key_secret: "",
+                });
+              const options = {
+                amount: payload.amount * 100, // Convert to paise
+                currency: "INR",
+                receipt: `receipt_${Date.now()}`,
+                payment_capture: 1,
+              };
+          
+              const order = await razorpay.orders.create(options);
+              console.log(order, 'orderorderorder');
+              
+              return response.status(200).send(order);
+            } catch (error) {
+                return response.status(500).json({ error: error.message });
+            }
+    }
+
+    @Post('/razorpay-notify')
+    public async razorpaNotify(@Body() data: any, @Res() res: any, @Req() req: any): Promise<any> {
+        const RAZORPAY_SECRET = '';
+        const razorpaySignature = req.headers["x-razorpay-signature"] as string;
+        console.log(razorpaySignature, 'razorpaySignaturerazorpaySignature');
+        const webhookBody = JSON.stringify(req.body);
+    
+        // Create HMAC SHA256 signature
+        const crypto = require('crypto');
+        const expectedSignature = crypto
+            .createHmac("sha256", RAZORPAY_SECRET)
+            .update(webhookBody)
+            .digest("hex");
+    
+        if (expectedSignature === razorpaySignature) {
+            console.log("Webhook verified successfully:", req.body);
+    
+            // Process different event types
+            const eventType = req.body.event;
+            if (eventType === "order.paid") {
+                console.log('Order payment Successfully');
+                // Handle successful order payment
+            } else if (eventType === "payment.failed") {
+                // Handle failed payment
+            }
+            return res.status(200).send({ status: "success" });
+        } else {
+            console.log("Webhook verification failed");
+            return res.status(400).send({ status: "error", message: "Invalid signature" });
+        }
     }
 
     @Post('/notify')
