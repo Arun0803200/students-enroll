@@ -1,0 +1,39 @@
+# 📦 Build image
+docker build -t my-node-app .
+
+# 🚀 Run container and expose port
+docker run -p 3000:3000 my-node-app
+
+# 🧾 List images
+docker images
+
+# 📋 List containers
+docker ps           # Running containers
+docker ps -a        # All containers
+
+# 🛑 Stop container
+docker stop <container_id>
+
+# 🗑️ Remove container
+docker rm <container_id>
+
+# ❌ Remove image
+docker rmi my-node-app
+
+# 🔄 Rebuild image without using cache
+docker build --no-cache -t my-node-app .
+
+# 💼 Exec into a running container (like SSH)
+docker exec -it <container_id> /bin/bash
+
+# 🧼 Clean up unused images, containers, volumes
+docker system prune -a
+
+# 🧱 List volumes
+docker volume ls
+
+# 🔎 Show logs from a container
+docker logs <container_id>
+
+# 📥 Pull an image from Docker Hub
+docker pull node:18
